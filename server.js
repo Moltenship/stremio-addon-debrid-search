@@ -9,6 +9,8 @@ import rateLimit from 'express-rate-limit'
 import swStats from 'swagger-stats'
 import addonInterface from "./addon.js"
 
+process.env.ADDON_URL ||= process.env.RENDER_EXTERNAL_URL
+
 const app = express()
 app.enable('trust proxy')
 app.use((_, res, next) => {
