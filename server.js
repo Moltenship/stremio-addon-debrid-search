@@ -11,6 +11,14 @@ import addonInterface from "./addon.js"
 
 const app = express()
 app.enable('trust proxy')
+app.use((_, res, next) => {
+    res.setHeader('Access-Control-Allow-Origin', '*')
+    res.setHeader('Access-Control-Allow-Methods', 'GET, OPTIONS')
+    res.setHeader('Access-Control-Allow-Headers', '*')
+    res.setHeader('Access-Control-Allow-Private-Network', 'true')
+    next()
+})
+app.options('*', (_, res) => res.sendStatus(204))
 app.use(cors())
 
 app.use(swStats.getMiddleware({
