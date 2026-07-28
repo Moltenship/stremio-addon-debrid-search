@@ -9,8 +9,18 @@ import rateLimit from 'express-rate-limit'
 import swStats from 'swagger-stats'
 import addonInterface from "./addon.js"
 
+process.env.ADDON_URL ||= process.env.RENDER_EXTERNAL_URL
+
 const app = express()
 app.enable('trust proxy')
+app.use((_, res, next) => {
+    res.setHeader('Access-Control-Allow-Origin', '*')
+    res.setHeader('Access-Control-Allow-Methods', 'GET, OPTIONS')
+    res.setHeader('Access-Control-Allow-Headers', '*')
+    res.setHeader('Access-Control-Allow-Private-Network', 'true')
+    next()
+})
+app.options('*', (_, res) => res.sendStatus(204))
 app.use(cors())
 
 app.use(swStats.getMiddleware({

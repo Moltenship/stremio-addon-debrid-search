@@ -1,0 +1,14 @@
+services:
+  - type: web
+    name: debrid-search-ru
+    runtime: node
+    plan: free
+    region: frankfurt
+    buildCommand: corepack enable && corepack prepare pnpm@9.15.9 --activate && pnpm install --frozen-lockfile
+    startCommand: node server.js
+    healthCheckPath: /ping
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: NODE_VERSION
+        value: 18.20.8
