@@ -2,6 +2,7 @@ import { addonBuilder } from "stremio-addon-sdk"
 import StreamProvider from './lib/stream-provider.js'
 import CatalogProvider from './lib/catalog-provider.js'
 import { getManifest } from './lib/util/manifest.js'
+import { parseStreamId } from './lib/util/media-id.js'
 
 const CACHE_MAX_AGE = parseInt(process.env.CACHE_MAX_AGE) || 1 * 60 // 1 min
 const STALE_REVALIDATE_AGE = 1 * 60 // 1 min
@@ -54,7 +55,7 @@ builder.defineCatalogHandler((args) => {
 // Docs: https://github.com/Stremio/stremio-addon-sdk/blob/master/docs/api/requests/defineStreamHandler.md
 builder.defineStreamHandler(args => {
     return new Promise((resolve, reject) => {
-        if (!args.id.match(/tt\d+/i)) {
+        if (!parseStreamId(args.type, args.id)) {
             resolve({ streams: [] })
             return
         }
