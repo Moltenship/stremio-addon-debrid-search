@@ -80,3 +80,21 @@ test('TMDB movie titles retain year filtering and ignore empty torrents', async 
     assert.equal(result.streams[0].url, 'https://addon.test/resolve/TorBox/test-key/30/0')
     assert.ok(!result.streams[0].name.includes('undefined'))
 })
+
+test('New Moon finds the screenshot release without Wikidata aliases and excludes other films', async t => {
+    t.mock.method(Metadata, 'getMeta', async () => ({ name: 'The Twilight Saga: New Moon', year: '2009' }))
+    const names = [
+        'The.Twilight.Saga.New.Moon.2009.2160p.UHD.BDREMUX.DV.HDR.HEVC-Нечипорук.mkv',
+        'Twilight.2008.2160p.mkv',
+        'The.Twilight.Saga.Eclipse.2010.2160p.mkv',
+        'The.Twilight.Saga.New.Moon.2025.2160p.mkv',
+        'The.Twilight.Saga.Other.Movie.2009.2160p.mkv'
+    ]
+    t.mock.method(globalThis, 'fetch', async () => new Response(JSON.stringify({ success: true, data:
+        names.map((name, id) => ({ id, name, download_finished: true, download_present: true,
+            files: [{ id: 0, short_name: name, name, size: 89000000000 }] }))
+    }), { headers: { 'Content-Type': 'application/json' } }))
+    const result = await addon.get('stream', 'movie', 'tt1259571', {}, { DebridProvider: 'TorBox', DebridApiKey: 'test-key' })
+    assert.equal(result.streams.length, 1)
+    assert.equal(result.streams[0].url, 'https://addon.test/resolve/TorBox/test-key/0/0')
+})
